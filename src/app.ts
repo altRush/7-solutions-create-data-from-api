@@ -1,6 +1,7 @@
 import axios from 'axios';
 import express, { Express, Request, Response } from 'express';
-import { countElementsInArray, groupBy } from './utils';
+import { extractCountOfDataGroup, groupBy } from './utils';
+import { GroupResult } from './types';
 
 const app: Express = express();
 
@@ -13,13 +14,17 @@ app.get('/', async (req: Request, res: Response) => {
 
 	const groupedByDepartmentData = groupBy(users, 'company', 'department');
 
-	const male = countElementsInArray(
+	const genderGroup = groupBy(groupedByDepartmentData['Marketing'], 'gender');
+	const hairColorGroup = groupBy(
 		groupedByDepartmentData['Marketing'],
-		'gender',
-		'male'
+		'hair',
+		'color'
 	);
 
-	res.json({ male });
+	const genderInfo: any = extractCountOfDataGroup(genderGroup);
+	const hairColorInfo: any = extractCountOfDataGroup(hairColorGroup);
+
+	res.json({ ...genderInfo, hair: hairColorInfo } as GroupResult);
 });
 
 app.listen(port, () => console.log(`Application is running on port ${port}`));

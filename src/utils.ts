@@ -4,7 +4,7 @@ export function groupBy(
 	data: Record<string, any>,
 	key: string,
 	nestedKey?: string
-): GroupResult {
+) {
 	return data.reduce((storage: any, item: any) => {
 		// get the first instance of the key by which we're grouping
 		let group;
@@ -26,16 +26,11 @@ export function groupBy(
 	}, {}); // {} is the initial value of the storage
 }
 
-export function countElementsInArray(
-	array: any,
-	key: string,
-	searchValue: string
-) {
-	let count = 0;
-	for (let i = 0; i < array.length; ++i) {
-		if (array[i][key] === searchValue) {
-			count++;
-		}
+export function extractCountOfDataGroup(dataGroup: any) {
+	let info: any = [];
+	for (const [key, value] of Object.entries(dataGroup)) {
+		info = { ...info, [key]: (value as any).length };
 	}
-	return count;
+
+	return info;
 }
