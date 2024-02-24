@@ -47,12 +47,6 @@ export function findMaxMin(data: any, key: string): MinMax {
 }
 
 export function transformToNameAndPostalCode(dataArray: any) {
-	// const transformed = dataArray.map((record: any) => {
-	// 	return {
-	// 		[`${record.firstName}${record.lastName}`]: record.address.postalCode
-	// 	};
-	// });
-
 	var transformed = dataArray.reduce(
 		(obj: any, item: any) =>
 			Object.assign(obj, {
@@ -62,4 +56,42 @@ export function transformToNameAndPostalCode(dataArray: any) {
 	);
 
 	return transformed;
+}
+
+export function formResponseRecordForDepartment(
+	departmentData: any
+): GroupResult {
+	const genderGroup = groupBy(departmentData, 'gender');
+	const hairColorGroup = groupBy(departmentData, 'hair', 'color');
+
+	const genderCount: any = extractCountOfDataGroup(genderGroup);
+	const hairColorCount: any = extractCountOfDataGroup(hairColorGroup);
+	const { max: maxAge, min: minAge } = findMaxMin(departmentData, 'age');
+
+	const addressUser = transformToNameAndPostalCode(departmentData);
+
+	const isSameAgeMinMax = minAge === maxAge;
+	const formattedRangedAge = isSameAgeMinMax
+		? `${maxAge}`
+		: `${minAge}-${maxAge}`;
+
+	return {
+		...genderCount,
+		hair: hairColorCount,
+		ageRange: formattedRangedAge,
+		addressUser
+	};
+}
+
+export function formResponse(dataCollection: any): Record<string, GroupResult> {
+	let response = {};
+
+	for (const department in dataCollection) {
+		response = {
+			...response,
+			[department]: formResponseRecordForDepartment(dataCollection[department])
+		};
+	}
+
+	return response;
 }

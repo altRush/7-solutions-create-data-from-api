@@ -1,12 +1,6 @@
 import axios from 'axios';
 import express, { Express, Request, Response } from 'express';
-import {
-	extractCountOfDataGroup,
-	findMaxMin,
-	groupBy,
-	transformToNameAndPostalCode
-} from './utils';
-import { GroupResult } from './types';
+import { formResponse, groupBy } from './utils';
 
 const app: Express = express();
 
@@ -19,31 +13,9 @@ app.get('/', async (req: Request, res: Response) => {
 
 	const groupedByDepartmentData = groupBy(users, 'company', 'department');
 
-	const genderGroup = groupBy(groupedByDepartmentData['Marketing'], 'gender');
-	const hairColorGroup = groupBy(
-		groupedByDepartmentData['Marketing'],
-		'hair',
-		'color'
-	);
+	const formedResponse = formResponse(groupedByDepartmentData);
 
-	const genderInfo: any = extractCountOfDataGroup(genderGroup);
-	const hairColorInfo: any = extractCountOfDataGroup(hairColorGroup);
-	const { max: maxAge, min: minAge } = findMaxMin(
-		groupedByDepartmentData['Marketing'],
-		'age'
-	);
-
-	const addressUser = transformToNameAndPostalCode(
-		groupedByDepartmentData['Marketing']
-	);
-
-	// res.json(groupedByDepartmentData['Marketing']);
-	res.json({
-		...genderInfo,
-		hair: hairColorInfo,
-		ageRange: `${minAge}-${maxAge}`,
-		addressUser
-	} as GroupResult);
+	res.json(formedResponse);
 });
 
 app.listen(port, () => console.log(`Application is running on port ${port}`));
