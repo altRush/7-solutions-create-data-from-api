@@ -12,3 +12,8 @@ export type GroupResult = {
 		userAddress: Record<string, string>;
 	};
 };
+
+export type MinMax = {
+	min: number;
+	max: number;
+};

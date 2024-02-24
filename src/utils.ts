@@ -1,4 +1,4 @@
-import { GroupResult } from './types';
+import { GroupResult, MinMax } from './types';
 
 export function groupBy(
 	data: Record<string, any>,
@@ -33,4 +33,33 @@ export function extractCountOfDataGroup(dataGroup: any) {
 	}
 
 	return info;
+}
+
+export function findMaxMin(data: any, key: string): MinMax {
+	const dataGroup = groupBy(data, key);
+	const stringAgeArray = Object.keys(dataGroup);
+	const ageArray = stringAgeArray.map(age => parseInt(age));
+
+	const max = Math.max(...ageArray);
+	const min = Math.min(...ageArray);
+
+	return { max, min };
+}
+
+export function transformToNameAndPostalCode(dataArray: any) {
+	// const transformed = dataArray.map((record: any) => {
+	// 	return {
+	// 		[`${record.firstName}${record.lastName}`]: record.address.postalCode
+	// 	};
+	// });
+
+	var transformed = dataArray.reduce(
+		(obj: any, item: any) =>
+			Object.assign(obj, {
+				[`${item.firstName}${item.lastName}`]: item.address.postalCode
+			}),
+		{}
+	);
+
+	return transformed;
 }
