@@ -9,7 +9,9 @@ export function groupBy<T extends Record<string, any>>(
 	data: Array<T>,
 	key: string,
 	nestedKey?: string
-): T {
+): T | null {
+	if (!data?.length) return null;
+
 	return data.reduce((storage: any, item: T) => {
 		let group;
 
@@ -30,12 +32,12 @@ export function groupBy<T extends Record<string, any>>(
 
 export function extractCountOfDataGroup(
 	dataGroup: Record<string, any>
-): ExtractedCount {
+): ExtractedCount | null {
 	let info = {};
 	const entries = Object.entries(dataGroup);
 
 	if (!entries.length) {
-		return {};
+		return null;
 	}
 
 	for (const [key, value] of Object.entries(dataGroup)) {
@@ -49,11 +51,14 @@ export function findMinMax<T extends Record<string, any>>(
 	dataArray: T[],
 	key: string
 ): MinMax | null {
+	if (!dataArray?.length) return null;
+
 	const dataGroup = groupBy(dataArray, key);
+
+	if (!dataGroup) return null;
+
 	const stringAgeArray = Object.keys(dataGroup);
 	const ageArray = stringAgeArray.map(age => parseInt(age));
-
-	if (!ageArray.length) return null;
 
 	const max = Math.max(...ageArray);
 	const min = Math.min(...ageArray);
@@ -77,19 +82,23 @@ export function transformToNameAndPostalCode<T>(
 	return transformed;
 }
 
-export function formResponseRecordForDepartment(
-	departmentData: any
-): GroupResult | void {
+export function formResponseRecordForDepartment<T extends Record<string, any>>(
+	departmentData: T[]
+): GroupResult | null {
 	const genderGroup = groupBy(departmentData, 'gender');
+
+	if (!genderGroup) return null;
+
 	const hairColorGroup = groupBy(departmentData, 'hair', 'color');
 
-	const genderCount: ExtractedCount = extractCountOfDataGroup(genderGroup);
-	const hairColorCount: ExtractedCount =
-		extractCountOfDataGroup(hairColorGroup);
+	if (!hairColorGroup) return null;
+
+	const genderCount = extractCountOfDataGroup(genderGroup);
+	const hairColorCount = extractCountOfDataGroup(hairColorGroup);
 
 	const minMax = findMinMax(departmentData, 'age');
 
-	if (!minMax) return;
+	if (!minMax) return null;
 
 	const { max: maxAge, min: minAge } = minMax;
 	const isSameAgeMinMax = minAge === maxAge;
@@ -99,7 +108,7 @@ export function formResponseRecordForDepartment(
 
 	const addressUser = transformToNameAndPostalCode(departmentData);
 
-	if (!addressUser) return;
+	if (!addressUser) return null;
 
 	return {
 		...genderCount,
