@@ -48,13 +48,19 @@ function findMinMax(data: any, key: string): MinMax {
 	const stringAgeArray = Object.keys(dataGroup);
 	const ageArray = stringAgeArray.map(age => parseInt(age));
 
+	if (!ageArray.length) return null;
+
 	const max = Math.max(...ageArray);
 	const min = Math.min(...ageArray);
 
 	return { min, max };
 }
 
-function transformToNameAndPostalCode(dataArray: any): NameAndPostalCode {
+function transformToNameAndPostalCode(
+	dataArray: any
+): NameAndPostalCode | null {
+	if (!dataArray.length) return null;
+
 	const transformed = dataArray.reduce(
 		(obj: any, item: any) =>
 			Object.assign(obj, {
@@ -66,22 +72,29 @@ function transformToNameAndPostalCode(dataArray: any): NameAndPostalCode {
 	return transformed;
 }
 
-function formResponseRecordForDepartment(departmentData: any): GroupResult {
+function formResponseRecordForDepartment(
+	departmentData: any
+): GroupResult | void {
 	const genderGroup = groupBy(departmentData, 'gender');
 	const hairColorGroup = groupBy(departmentData, 'hair', 'color');
 
 	const genderCount: ExtractedCount = extractCountOfDataGroup(genderGroup);
 	const hairColorCount: ExtractedCount =
 		extractCountOfDataGroup(hairColorGroup);
-	const { max: maxAge, min: minAge } = findMinMax(departmentData, 'age');
 
-	const addressUser: NameAndPostalCode =
-		transformToNameAndPostalCode(departmentData);
+	const minMax = findMinMax(departmentData, 'age');
 
+	if (!minMax) return;
+
+	const { max: maxAge, min: minAge } = minMax;
 	const isSameAgeMinMax = minAge === maxAge;
 	const formattedRangedAge = isSameAgeMinMax
 		? `${maxAge}`
 		: `${minAge}-${maxAge}`;
+
+	const addressUser = transformToNameAndPostalCode(departmentData);
+
+	if (!addressUser) return;
 
 	return {
 		...genderCount,
