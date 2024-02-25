@@ -8,6 +8,11 @@ import {
 
 describe('All utils', () => {
 	describe('groupBy', () => {
+		test('Receives null with empty data array supplied', () => {
+			const groupedData = groupBy([], '__MOCK_KEY__');
+
+			expect(groupedData).toBe(null);
+		});
 		test('Works with nested layer of data (hair/color)', () => {
 			const mockData = [
 				{
@@ -844,14 +849,13 @@ describe('All utils', () => {
 
 			expect(groupedData).toEqual(expectedGroupByResult);
 		});
-		test('empty', () => {});
 	});
 
 	describe('extractCountOfDataGroup', () => {
-		test('Receives empty object with empty data group supplied', () => {
+		test('Receives null with empty data group supplied', () => {
 			const extractedCount = extractCountOfDataGroup({});
 
-			expect(extractedCount).toEqual({});
+			expect(extractedCount).toEqual(null);
 		});
 		test('successful', () => {});
 	});
