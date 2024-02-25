@@ -11,7 +11,7 @@ export type GroupResult = {
 export type MinMax = {
 	min: number;
 	max: number;
-} | null;
+};
 
 export type ExtractedCount = Record<string, number>;
 

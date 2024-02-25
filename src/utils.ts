@@ -5,12 +5,12 @@ import {
 	NameAndPostalCode
 } from './types';
 
-export function groupBy(
-	data: Array<any>,
+export function groupBy<T extends Record<string, any>>(
+	data: Array<T>,
 	key: string,
 	nestedKey?: string
-): Record<string, Array<any>> {
-	return data.reduce((storage: any, item: any) => {
+): T {
+	return data.reduce((storage: any, item: T) => {
 		let group;
 
 		if (nestedKey) {
@@ -28,8 +28,10 @@ export function groupBy(
 	}, {});
 }
 
-function extractCountOfDataGroup(dataGroup: any): ExtractedCount {
-	let info: any = [];
+function extractCountOfDataGroup(
+	dataGroup: Record<string, any>
+): ExtractedCount {
+	let info = {};
 	const entries = Object.entries(dataGroup);
 
 	if (!entries.length) {
@@ -43,8 +45,11 @@ function extractCountOfDataGroup(dataGroup: any): ExtractedCount {
 	return info;
 }
 
-function findMinMax(data: any, key: string): MinMax {
-	const dataGroup = groupBy(data, key);
+function findMinMax<T extends Record<string, any>>(
+	dataArray: T[],
+	key: string
+): MinMax | null {
+	const dataGroup = groupBy(dataArray, key);
 	const stringAgeArray = Object.keys(dataGroup);
 	const ageArray = stringAgeArray.map(age => parseInt(age));
 
