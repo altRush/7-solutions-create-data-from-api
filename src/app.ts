@@ -7,9 +7,13 @@ const app: Express = express();
 const port: number = 3000;
 
 app.get('/', async (req: Request, res: Response) => {
+	const userLimit = req.query.limit;
+
 	const {
 		data: { users }
-	} = await axios.get('https://dummyjson.com/users?limit=10');
+	} = await axios.get(
+		`https://dummyjson.com/users${userLimit ? `?limit=${userLimit}` : ''}`
+	);
 
 	const groupedByDepartmentData = groupBy(users, 'company', 'department');
 
