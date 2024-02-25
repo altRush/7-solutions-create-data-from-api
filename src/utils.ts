@@ -28,7 +28,7 @@ export function groupBy<T extends Record<string, any>>(
 	}, {});
 }
 
-function extractCountOfDataGroup(
+export function extractCountOfDataGroup(
 	dataGroup: Record<string, any>
 ): ExtractedCount {
 	let info = {};
@@ -45,7 +45,7 @@ function extractCountOfDataGroup(
 	return info;
 }
 
-function findMinMax<T extends Record<string, any>>(
+export function findMinMax<T extends Record<string, any>>(
 	dataArray: T[],
 	key: string
 ): MinMax | null {
@@ -61,8 +61,8 @@ function findMinMax<T extends Record<string, any>>(
 	return { min, max };
 }
 
-function transformToNameAndPostalCode(
-	dataArray: any
+export function transformToNameAndPostalCode<T>(
+	dataArray: T[]
 ): NameAndPostalCode | null {
 	if (!dataArray.length) return null;
 
@@ -77,7 +77,7 @@ function transformToNameAndPostalCode(
 	return transformed;
 }
 
-function formResponseRecordForDepartment(
+export function formResponseRecordForDepartment(
 	departmentData: any
 ): GroupResult | void {
 	const genderGroup = groupBy(departmentData, 'gender');
