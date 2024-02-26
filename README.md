@@ -1,3 +1,11 @@
+### Live endpoint
+
+https://seven-solutions-create-data-from-api.onrender.com/
+
+#### Support "limit" querystring
+
+ex: https://seven-solutions-create-data-from-api.onrender.com?limit=3
+
 ### Locally run
 
 `npm run dev`
