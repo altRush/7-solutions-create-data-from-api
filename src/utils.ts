@@ -82,21 +82,25 @@ export function transformToNameAndPostalCode<T>(
 	return transformed;
 }
 
+// dependency injection for testing purpose
 export function formResponseRecordForDepartment<T extends Record<string, any>>(
-	departmentData: T[]
+	departmentData: T[],
+	groupByFunction: typeof groupBy,
+	findMinMaxFunction: typeof findMinMax,
+	transformToNameAndPostalCodeFunction: typeof transformToNameAndPostalCode
 ): GroupResult | null {
-	const genderGroup = groupBy(departmentData, 'gender');
+	const genderGroup = groupByFunction(departmentData, 'gender');
 
 	if (!genderGroup) return null;
 
-	const hairColorGroup = groupBy(departmentData, 'hair', 'color');
+	const hairColorGroup = groupByFunction(departmentData, 'hair', 'color');
 
 	if (!hairColorGroup) return null;
 
 	const genderCount = extractCountOfDataGroup(genderGroup);
 	const hairColorCount = extractCountOfDataGroup(hairColorGroup);
 
-	const minMax = findMinMax(departmentData, 'age');
+	const minMax = findMinMaxFunction(departmentData, 'age');
 
 	if (!minMax) return null;
 
@@ -106,25 +110,38 @@ export function formResponseRecordForDepartment<T extends Record<string, any>>(
 		? `${maxAge}`
 		: `${minAge}-${maxAge}`;
 
-	const addressUser = transformToNameAndPostalCode(departmentData);
+	const addressUser = transformToNameAndPostalCodeFunction(departmentData);
 
 	if (!addressUser) return null;
 
-	return {
+	const formedGroupResult = {
 		...genderCount,
 		hair: hairColorCount,
 		ageRange: formattedRangedAge,
 		addressUser
 	} as unknown as GroupResult;
+
+	return formedGroupResult;
 }
 
-export function formResponse(dataCollection: any): Record<string, GroupResult> {
+export function formResponse(
+	dataCollection: Record<string, any>
+): Record<string, GroupResult> | null {
 	let response = {};
+
+	const isThereLengthDataCollection = Object.keys(dataCollection).length;
+
+	if (isThereLengthDataCollection < 1) return null;
 
 	for (const department in dataCollection) {
 		response = {
 			...response,
-			[department]: formResponseRecordForDepartment(dataCollection[department])
+			[department]: formResponseRecordForDepartment(
+				dataCollection[department],
+				groupBy,
+				findMinMax,
+				transformToNameAndPostalCode
+			)
 		};
 	}
 
