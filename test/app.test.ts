@@ -153,7 +153,7 @@ describe('Test the root path', () => {
 	});
 
 	test('formResponse returns empty data, making could not go on further', async () => {
-		jest.spyOn(utils, 'formResponse').mockImplementation(() => ({}));
+		jest.spyOn(utils, 'formResponse').mockImplementation(() => null);
 		const response = await request(app).get('/');
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toEqual({
