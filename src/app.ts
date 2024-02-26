@@ -17,32 +17,40 @@ app.get('/', async (req: Request, res: Response) => {
 		} = await axios.get(
 			`https://dummyjson.com/users${userLimit ? `?limit=${userLimit}` : ''}`
 		));
-	} catch (e) {
-		console.error('Unexpected error: ', e);
+	} catch (e: any) {
+		console.error('Unexpected error: ', e.code);
+
 		res.status(500).json({
 			message: 'Internal server error'
 		});
+		return;
 	}
 
 	if (!users?.length) {
 		res.status(400).json({ message: 'Invalid supplied users data' });
+		return;
 	}
 
 	const groupedByDepartmentData = groupBy(users, 'company', 'department');
 
 	if (!groupedByDepartmentData) {
 		res.status(400).json({ message: 'Insufficient grouped department data' });
+		return;
 	}
 
 	const formedResponse = formResponse(groupedByDepartmentData);
+	const formedResponseLength = Object.keys(formedResponse).length;
 
-	if (!formedResponse) {
+	if (!formedResponseLength) {
 		res.status(400).json({
 			message: 'Insufficient formed response by grouped department data'
 		});
+		return;
 	}
 
 	res.status(200).json(formedResponse);
 });
 
 app.listen(port, () => console.log(`Application is running on port ${port}`));
+
+export { app };
