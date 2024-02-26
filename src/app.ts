@@ -39,9 +39,8 @@ app.get('/', async (req: Request, res: Response) => {
 	}
 
 	const formedResponse = formResponse(groupedByDepartmentData);
-	const formedResponseLength = Object.keys(formedResponse).length;
 
-	if (!formedResponseLength) {
+	if (!formedResponse) {
 		res.status(400).json({
 			message: 'Insufficient formed response by grouped department data'
 		});
